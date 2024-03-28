@@ -2,23 +2,30 @@ spring:
   application:
     name: GATEWAY-SERVICE
 
-#  cloud:
-#    gateway:
-#      routes:
-#        - id: order-service
-#          uri: lb://ORDER-SERVICE
-#          predicates:
-#            - Path=/orders/**
-#
-#        - id: payment-service
-#          uri: lb://PAYMENT-SERVICE
-#          predicates:
-#            - Path=/payments/**
-#
-#        - id: user-service
-#          uri: lb://USER-SERVICE
-#          predicates:
-#            - Path=/users/**
+  cloud:
+    gateway:
+      routes:
+        - id: order-service
+          uri: lb://ORDER-SERVICE
+          predicates:
+            - Path=/orders/**
+          filters:
+            - AuthenticationFilter
+
+        - id: payment-service
+          uri: lb://PAYMENT-SERVICE
+          predicates:
+            - Path=/payments/**
+
+        - id: user-service
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/users/**
+
+        - id: identity-service
+          uri: lb://IDENTITY-SERVICE
+          predicates:
+            - Path=/auth/**
 
 server:
   port: 9090
