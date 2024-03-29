@@ -1,7 +1,6 @@
 spring:
   application:
     name: GATEWAY-SERVICE
-
   cloud:
     gateway:
       routes:
@@ -11,21 +10,50 @@ spring:
             - Path=/orders/**
           filters:
             - AuthenticationFilter
+            - name: CircuitBreaker
+              args:
+                name: callOrderFallback
+                fallbackUri: forward:/fallback/order
 
         - id: payment-service
           uri: lb://PAYMENT-SERVICE
           predicates:
             - Path=/payments/**
+          filers:
+            - name: CircuitBreaker
+              args:
+                name: callPaymentFallback
+                fallbackUri: forward:/fallback/payment
 
         - id: user-service
           uri: lb://USER-SERVICE
           predicates:
             - Path=/users/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name : callUserFallback
+                fallbackUri : forward:/fallback/user
+#          filers:
+#            - name: CircuitBreaker
+#              args:
+#                name: callUserFallback
+#                fallbackUri: forward:/fallback/user
 
         - id: identity-service
           uri: lb://IDENTITY-SERVICE
           predicates:
             - Path=/auth/**
+          filers:
+            - name: CircuitBreaker
+              args:
+                name: callIdentityFallback
+                fallbackUri: forward:/fallback/identity
+
+
+    config:
+      import-check:
+        enabled: false
 
 server:
   port: 9090
